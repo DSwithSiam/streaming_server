@@ -6,7 +6,7 @@ This document explains how to deploy the Django + nginx-rtmp streaming server in
 - Ubuntu 22.04+ (root/sudo access)
 - Python 3.10+ and `venv`
 - git
-- Ports open: 80/443 (web), 1935 (RTMP), 8000 (app, or behind reverse proxy), 8080 (HLS, or proxied)
+- Ports open: 80/443 (web), 1935 (RTMP), 8000 (app, or behind reverse proxy), 9000 (HLS, or proxied)
 
 ## 2) Clone and set up Python env
 ```bash
@@ -106,9 +106,9 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
-    # HLS passthrough (optional if you proxy 8080)
+    # HLS passthrough (optional if you proxy 9000)
     location /live/ {
-        proxy_pass http://127.0.0.1:8080;
+        proxy_pass http://127.0.0.1:9000;
     }
 }
 ```
@@ -123,12 +123,12 @@ sudo ufw allow 80
 sudo ufw allow 443
 sudo ufw allow 1935
 sudo ufw allow 8000   # if directly exposed
-sudo ufw allow 8080   # if directly exposed
+sudo ufw allow 9000   # if directly exposed
 ```
 
 ## 9) Verify
 - RTMP ingest (OBS): `rtmp://your.server.ip:1935/live/{STREAM_KEY}`
-- HLS playlist: `http://your.server.ip:8080/live/{STREAM_KEY}.m3u8`
+- HLS playlist: `http://your.server.ip:9000/live/{STREAM_KEY}.m3u8`
 - Watch page: `http://your.server.ip:8000/watch/{STREAM_KEY}/` (or your domain)
 - nginx config test: `sudo /usr/local/nginx/sbin/nginx -t`
 

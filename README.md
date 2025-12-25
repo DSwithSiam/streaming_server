@@ -65,7 +65,7 @@ python manage.py runserver 0.0.0.0:8000
 
 ```bash
 # Visit in browser or use curl
-curl http://localhost:8000/create_stream_key/?title=My%20Stream
+curl http://10.10.13.73:8000/create_stream_key/?title=My%20Stream
 ```
 
 Response:
@@ -73,8 +73,9 @@ Response:
 {
   "stream_key": "abc123def456...",
   "title": "My Stream",
-  "rtmp_url": "rtmp://localhost/live/abc123def456...",
-  "watch_url": "/watch/abc123def456.../"
+  "rtmp_url": "rtmp://10.10.13.73:1935/live/abc123def456...",
+  "watch_url": "http://10.10.13.73:8000/watch/abc123def456.../",
+  "hls_url": "http://10.10.13.73:9000/live/abc123def456.../m3u8"
 }
 ```
 
@@ -92,13 +93,18 @@ Response:
 
 Open in browser:
 ```
-http://YOUR_SERVER_IP:8000/watch/YOUR_STREAM_KEY/
+http://10.10.13.73:8000/watch/YOUR_STREAM_KEY/
+```
+
+Or directly watch HLS:
+```
+http://10.10.13.73:9000/live/YOUR_STREAM_KEY.m3u8
 ```
 
 ### List All Streams
 
 ```bash
-curl http://localhost:8000/list_streams/
+curl http://10.10.13.73:8000/list_streams/
 ```
 
 ## API Endpoints
@@ -115,7 +121,8 @@ curl http://localhost:8000/list_streams/
 
 ### nginx RTMP Settings
 Edit `nginx/nginx.conf`:
-- RTMP Port: `1935` (default)
+- RTMP Port: `1935` (OBS ingest)
+- HLS Port: `9000` (HLS streaming)
 - HLS Fragment: `3 seconds`
 - HLS Playlist: `60 seconds`
 
@@ -151,6 +158,12 @@ sudo /usr/local/nginx/sbin/nginx
 ### Port 1935 in use
 ```bash
 sudo lsof -i :1935
+sudo kill -9 <PID>
+```
+
+### Port 9000 in use
+```bash
+sudo lsof -i :9000
 sudo kill -9 <PID>
 ```
 

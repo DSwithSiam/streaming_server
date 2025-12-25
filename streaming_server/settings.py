@@ -30,7 +30,7 @@ ALLOWED_HOSTS = ['*']
 # Server configuration for dynamic URLs
 SERVER_HOST = '10.10.13.73'  # Change this to your server IP or domain
 RTMP_PORT = 1935
-HLS_PORT = 8888  # Changed from 8080 to 8888
+HLS_PORT = 9000  # HLS streaming port - changed from 8888 to avoid conflicts
 
 
 # Application definition

@@ -108,7 +108,7 @@ video {
 <script>
     var video = document.getElementById('video');
     var serverHost = window.location.hostname;
-    var hlsUrl = 'http://' + serverHost + ':8888/live/{{ stream_key }}.m3u8';
+    var hlsUrl = 'http://' + serverHost + ':9000/live/{{ stream_key }}.m3u8';
 
     if (Hls.isSupported()) {
         var hls = new Hls({
