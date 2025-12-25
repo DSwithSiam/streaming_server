@@ -80,6 +80,8 @@ After=network.target
 [Service]
 Type=forking
 PIDFile=/usr/local/nginx/logs/nginx.pid
+ExecStartPre=/usr/bin/mkdir -p /usr/local/nginx/logs
+ExecStartPre=/usr/bin/rm -f /usr/local/nginx/logs/nginx.pid
 ExecStartPre=/usr/local/nginx/sbin/nginx -t
 ExecStart=/usr/local/nginx/sbin/nginx
 ExecReload=/usr/local/nginx/sbin/nginx -s reload
