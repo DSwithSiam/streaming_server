@@ -33,7 +33,7 @@ HLS_PORT = int(os.getenv('HLS_PORT', 9000))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [SERVER_HOST, '206.162.244.150']
+ALLOWED_HOSTS = [SERVER_HOST, '206.162.244.150', '127.0.0.1', 'localhost']
 
 # Server configuration for dynamic URLs
 
@@ -140,4 +140,4 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CSRF trusted origins (add your domain here for production)
-CSRF_TRUSTED_ORIGINS = [f"http://{SERVER_HOST}"]
+CSRF_TRUSTED_ORIGINS = [f"http://{SERVER_HOST}", "http://206.162.244.150", "http://127.0.0.1"]
