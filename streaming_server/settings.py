@@ -22,15 +22,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-wetjf#avo=8_y3_+y326wm_vf$mpb#)amlju$=eml#%*3q2cwd'
 
+
+import os
+
+SERVER_HOST = os.getenv('SERVER_HOST', 'localhost')
+RTMP_PORT = int(os.getenv('RTMP_PORT', 1935))
+HLS_PORT = int(os.getenv('HLS_PORT', 9000))
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [SERVER_HOST]
 
 # Server configuration for dynamic URLs
-SERVER_HOST = '10.10.13.73'  # Change this to your server IP or domain
-RTMP_PORT = 1935
-HLS_PORT = 9000  # HLS streaming port - changed from 8888 to avoid conflicts
+
+
 
 
 # Application definition
@@ -133,4 +140,4 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CSRF trusted origins (add your domain here for production)
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000']
+CSRF_TRUSTED_ORIGINS = [f"http://{SERVER_HOST}"]
