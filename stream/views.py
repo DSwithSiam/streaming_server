@@ -58,29 +58,41 @@ def list_streams(request):
 
 @csrf_exempt
 def on_publish(request):
-    """Called by nginx-rtmp when stream starts"""
+    """Called by nginx-rtmp when stream starts (supports GET or POST)"""
+    stream_key = ''
     if request.method == 'POST':
         stream_key = request.POST.get('name', '')
-        try:
-            stream = Stream.objects.get(stream_key=stream_key)
-            stream.is_live = True
-            stream.save()
-            return HttpResponse(status=200)
-        except Stream.DoesNotExist:
-            return HttpResponse(status=404)
-    return HttpResponse(status=405)
+    elif request.method == 'GET':
+        stream_key = request.GET.get('name', '')
+
+    if not stream_key:
+        return HttpResponse(status=400)
+
+    try:
+        stream = Stream.objects.get(stream_key=stream_key)
+        stream.is_live = True
+        stream.save()
+        return HttpResponse(status=200)
+    except Stream.DoesNotExist:
+        return HttpResponse(status=404)
 
 
 @csrf_exempt
 def on_publish_done(request):
-    """Called by nginx-rtmp when stream ends"""
+    """Called by nginx-rtmp when stream ends (supports GET or POST)"""
+    stream_key = ''
     if request.method == 'POST':
         stream_key = request.POST.get('name', '')
-        try:
-            stream = Stream.objects.get(stream_key=stream_key)
-            stream.is_live = False
-            stream.save()
-            return HttpResponse(status=200)
-        except Stream.DoesNotExist:
-            return HttpResponse(status=404)
-    return HttpResponse(status=405)
+    elif request.method == 'GET':
+        stream_key = request.GET.get('name', '')
+
+    if not stream_key:
+        return HttpResponse(status=400)
+
+    try:
+        stream = Stream.objects.get(stream_key=stream_key)
+        stream.is_live = False
+        stream.save()
+        return HttpResponse(status=200)
+    except Stream.DoesNotExist:
+        return HttpResponse(status=404)
