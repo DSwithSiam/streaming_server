@@ -29,10 +29,12 @@ def create_stream_key(request):
         stream_key=uuid.uuid4().hex,
         title=request.GET.get('title', 'Untitled Stream')
     )
+    server_host = get_server_host(request)
+    rtmp_port = getattr(settings, 'RTMP_PORT', 1935)
     return JsonResponse({
         "stream_key": stream.stream_key,
         "title": stream.title,
-        "rtmp_url": f"rtmp://localhost/live/{stream.stream_key}",
+        "rtmp_url": f"rtmp://{server_host}:{rtmp_port}/live/{stream.stream_key}",
         "watch_url": f"/watch/{stream.stream_key}/"
     })
 
