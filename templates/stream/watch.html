@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Live TV</title>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Full screen container */
+.tv-container {
+    width: 100vw;
+    height: 100vh;
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Video full screen */
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* TV like */
+    background: black;
+}
+
+/* Top bar */
+.tv-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(to bottom, rgba(0,0,0,.7), transparent);
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 20px;
+    z-index: 10;
+}
+
+/* Live badge */
+.live-badge {
+    background: red;
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-right: 15px;
+    animation: blink 1.2s infinite;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: .4; }
+    100% { opacity: 1; }
+}
+
+/* Bottom info bar */
+.tv-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background: linear-gradient(to top, rgba(0,0,0,.7), transparent);
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 14px;
+    z-index: 10;
+}
+</style>
+</head>
+
+<body>
+
+<div class="tv-container">
+
+    <!-- Header -->
+    <div class="tv-header">
+        <span class="live-badge">LIVE</span>
+        <span>{{ stream_key|upper }} CHANNEL</span>
+    </div>
+
+    <!-- Video -->
+    <video id="video" controls autoplay playsinline></video>
+
+    <!-- Footer -->
+    <div class="tv-footer">
+        Press ⏯ to control • Full HD Live Broadcast
+    </div>
+
+</div>
+
+<script>
+    var video = document.getElementById('video');
+
+    if (Hls.isSupported()) {
+        var hls = new Hls({
+            lowLatencyMode: true,
+            maxBufferLength: 10
+        });
+        hls.loadSource('http://10.10.13.73:8080/live/{{ stream_key }}.m3u8');
+        hls.attachMedia(video);
+        
+        hls.on(Hls.Events.ERROR, function (event, data) {
+            console.error('HLS Error:', data);
+        });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = 'http://10.10.13.73:8080/live/{{ stream_key }}.m3u8';
+    }
+
+    // Auto full screen on click (TV / kiosk style)
+    document.body.addEventListener('click', function () {
+        if (video.requestFullscreen) {
+            video.requestFullscreen();
+        }
+    });
+</script>
+
+</body>
+</html>

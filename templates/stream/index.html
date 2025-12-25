@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        
+        .create-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        .streams-list {
+            margin-top: 20px;
+        }
+        
+        .stream-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .stream-item.live {
+            border-left-color: #ff4444;
+            background: #fff5f5;
+        }
+        
+        .stream-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .stream-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .live-badge {
+            background: #ff4444;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .stream-info {
+            color: #666;
+            font-size: 0.9em;
+            margin: 5px 0;
+            word-break: break-all;
+        }
+        
+        .stream-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-watch {
+            padding: 8px 20px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .btn-copy {
+            padding: 8px 20px;
+            background: #6c757d;
+            font-size: 14px;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎥 OBS Streaming Server</h1>
+        
+        <div class="card">
+            <h2>Create New Stream</h2>
+            <div class="create-form">
+                <input type="text" id="streamTitle" placeholder="Enter stream title..." value="My Stream">
+                <button onclick="createStream()">Create Stream Key</button>
+            </div>
+            
+            <div id="successMessage" class="success-message"></div>
+        </div>
+        
+        <div class="card">
+            <h2>Active Streams</h2>
+            <div id="streamsList" class="streams-list">
+                <div class="empty-state">Loading streams...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function createStream() {
+            const title = document.getElementById('streamTitle').value || 'Untitled Stream';
+            
+            fetch(`/create_stream_key/?title=${encodeURIComponent(title)}`)
+                .then(res => res.json())
+                .then(data => {
+                    const msg = document.getElementById('successMessage');
+                    msg.innerHTML = `
+                        <strong>Stream Created!</strong><br>
+                        <strong>RTMP URL:</strong> ${data.rtmp_url}<br>
+                        <strong>Stream Key:</strong> ${data.stream_key}
+                    `;
+                    msg.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        msg.style.display = 'none';
+                    }, 5000);
+                    
+                    loadStreams();
+                    document.getElementById('streamTitle').value = '';
+                })
+                .catch(err => alert('Error creating stream: ' + err));
+        }
+        
+        function loadStreams() {
+            fetch('/list_streams/')
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById('streamsList');
+                    
+                    if (data.streams.length === 0) {
+                        container.innerHTML = '<div class="empty-state">No streams yet. Create one above!</div>';
+                        return;
+                    }
+                    
+                    container.innerHTML = data.streams.map(stream => `
+                        <div class="stream-item ${stream.is_live ? 'live' : ''}">
+                            <div class="stream-header">
+                                <div class="stream-title">${stream.title}</div>
+                                ${stream.is_live ? '<span class="live-badge">● LIVE</span>' : ''}
+                            </div>
+                            <div class="stream-info">
+                                <strong>Stream Key:</strong> ${stream.stream_key}
+                            </div>
+                            <div class="stream-info">
+                                <strong>RTMP URL:</strong> rtmp://localhost/live/${stream.stream_key}
+                            </div>
+                            <div class="stream-actions">
+                                <a href="${stream.watch_url}" class="btn-watch" target="_blank">Watch Stream</a>
+                                <button class="btn-copy" onclick="copyToClipboard('rtmp://localhost/live/${stream.stream_key}')">Copy RTMP URL</button>
+                            </div>
+                        </div>
+                    `).join('');
+                })
+                .catch(err => {
+                    document.getElementById('streamsList').innerHTML = 
+                        '<div class="empty-state">Error loading streams</div>';
+                });
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text)
+                .then(() => alert('Copied to clipboard!'))
+                .catch(() => alert('Failed to copy'));
+        }
+        
+        // Load streams on page load
+        loadStreams();
+        
+        // Refresh streams every 5 seconds
+        setInterval(loadStreams, 5000);
+    </script>
+</body>
+</html>
