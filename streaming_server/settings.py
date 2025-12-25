@@ -33,7 +33,7 @@ HLS_PORT = int(os.getenv('HLS_PORT', 9000))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [SERVER_HOST]
+ALLOWED_HOSTS = [SERVER_HOST, '206.162.244.150']
 
 # Server configuration for dynamic URLs
 

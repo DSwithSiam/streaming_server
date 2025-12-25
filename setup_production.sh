@@ -94,6 +94,17 @@ echo "✓ nginx-rtmp systemd service created"
 
 # 5. Create systemd service for Django
 echo "[5/6] Creating systemd service for Django..."
+
+# Detect venv location
+if [ -d "$SCRIPT_DIR/.venv" ]; then
+    VENV_PATH="$SCRIPT_DIR/.venv"
+elif [ -d "$SCRIPT_DIR/../venv" ]; then
+    VENV_PATH="$SCRIPT_DIR/../venv"
+else
+    echo "Warning: Virtual environment not found. Using default path."
+    VENV_PATH="$SCRIPT_DIR/.venv"
+fi
+
 cat > /etc/systemd/system/streaming_server.service << EOF
 [Unit]
 Description=Gunicorn for streaming_server
@@ -103,8 +114,8 @@ After=network.target
 User=$ACTUAL_USER
 Group=$ACTUAL_USER
 WorkingDirectory=$SCRIPT_DIR
-Environment="PATH=$SCRIPT_DIR/.venv/bin"
-ExecStart=$SCRIPT_DIR/.venv/bin/gunicorn streaming_server.wsgi:application \\
+Environment="PATH=$VENV_PATH/bin"
+ExecStart=$VENV_PATH/bin/gunicorn streaming_server.wsgi:application \\
   --bind 127.0.0.1:8000 --workers 3
 Restart=always
 
