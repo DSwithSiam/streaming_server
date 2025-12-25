@@ -107,8 +107,8 @@ video {
 
 <script>
     var video = document.getElementById('video');
-    var serverHost = window.location.hostname;
-    var hlsUrl = 'http://' + serverHost + ':9000/live/{{ stream_key }}.m3u8';
+    // Use same-origin /live/ path which is proxied to port 9000 by nginx
+    var hlsUrl = '/live/{{ stream_key }}.m3u8';
 
     if (Hls.isSupported()) {
         var hls = new Hls({
