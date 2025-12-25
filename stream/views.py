@@ -2,8 +2,13 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Stream
+from django.conf import settings
 import uuid
 import json
+
+def get_server_host(request):
+    """Get server host from settings or request"""
+    return getattr(settings, 'SERVER_HOST', request.get_host().split(':')[0])
 
 
 def index(request):
@@ -34,12 +39,15 @@ def create_stream_key(request):
 
 def list_streams(request):
     streams = Stream.objects.all()
+    server_host = get_server_host(request)
+    rtmp_port = getattr(settings, 'RTMP_PORT', 1935)
     return JsonResponse({
         "streams": [
             {
                 "stream_key": s.stream_key,
                 "title": s.title,
                 "is_live": s.is_live,
+                "rtmp_url": f"rtmp://{server_host}:{rtmp_port}/live/{s.stream_key}",
                 "watch_url": f"/watch/{s.stream_key}/"
             } for s in streams
         ]

@@ -227,11 +227,12 @@
                                 <strong>Stream Key:</strong> ${stream.stream_key}
                             </div>
                             <div class="stream-info">
-                                <strong>RTMP URL:</strong> rtmp://localhost/live/${stream.stream_key}
+                                <strong>RTMP URL:</strong> ${stream.rtmp_url}
                             </div>
+                           
                             <div class="stream-actions">
                                 <a href="${stream.watch_url}" class="btn-watch" target="_blank">Watch Stream</a>
-                                <button class="btn-copy" onclick="copyToClipboard('rtmp://localhost/live/${stream.stream_key}')">Copy RTMP URL</button>
+                                <button class="btn-copy" onclick="copyToClipboard('${stream.rtmp_url}')">Copy RTMP URL</button>
                             </div>
                         </div>
                     `).join('');
