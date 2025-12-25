@@ -192,7 +192,9 @@
                     msg.innerHTML = `
                         <strong>Stream Created!</strong><br>
                         <strong>RTMP URL:</strong> ${data.rtmp_url}<br>
-                        <strong>Stream Key:</strong> ${data.stream_key}
+                        <strong>Stream Key:</strong> ${data.stream_key}<br>
+                        <strong>HLS:</strong> http://${window.location.host}/live/${data.stream_key}.m3u8<br>
+                        <strong>WebRTC:</strong> http://${window.location.host}${data.watch_webrtc_url}
                     `;
                     msg.style.display = 'block';
                     
@@ -229,10 +231,19 @@
                             <div class="stream-info">
                                 <strong>RTMP URL:</strong> ${stream.rtmp_url}
                             </div>
+                            <div class="stream-info">
+                                <strong>HLS:</strong> http://${window.location.host}/live/${stream.stream_key}.m3u8
+                            </div>
+                            <div class="stream-info">
+                                <strong>WebRTC:</strong> http://${window.location.host}${stream.watch_webrtc_url}
+                            </div>
                            
                             <div class="stream-actions">
                                 <a href="${stream.watch_url}" class="btn-watch" target="_blank">Watch Stream</a>
+                                <a href="${stream.watch_webrtc_url}" class="btn-watch" target="_blank" style="background:#111bff;">Watch WebRTC</a>
                                 <button class="btn-copy" onclick="copyToClipboard('${stream.rtmp_url}')">Copy RTMP URL</button>
+                                <button class="btn-copy" onclick="copyToClipboard('http://${window.location.host}/live/${stream.stream_key}.m3u8')">Copy HLS</button>
+                                <button class="btn-copy" onclick="copyToClipboard('http://${window.location.host}${stream.watch_webrtc_url}')">Copy WebRTC</button>
                             </div>
                         </div>
                     `).join('');

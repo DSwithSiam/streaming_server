@@ -24,6 +24,16 @@ def watch_stream(request, stream_key):
     })
 
 
+def watch_stream_webrtc(request, stream_key):
+    stream = get_object_or_404(Stream, stream_key=stream_key)
+    server_host = get_server_host(request)
+    return render(request, "stream/watch_webrtc.html", {
+        "stream_key": stream_key,
+        "stream": stream,
+        "server_host": server_host,
+    })
+
+
 def create_stream_key(request):
     stream = Stream.objects.create(
         stream_key=uuid.uuid4().hex,
@@ -35,7 +45,8 @@ def create_stream_key(request):
         "stream_key": stream.stream_key,
         "title": stream.title,
         "rtmp_url": f"rtmp://{server_host}:{rtmp_port}/live/{stream.stream_key}",
-        "watch_url": f"/watch/{stream.stream_key}/"
+        "watch_url": f"/watch/{stream.stream_key}/",
+        "watch_webrtc_url": f"/watch_webrtc/{stream.stream_key}/"
     })
 
 
@@ -50,7 +61,8 @@ def list_streams(request):
                 "title": s.title,
                 "is_live": s.is_live,
                 "rtmp_url": f"rtmp://{server_host}:{rtmp_port}/live/{s.stream_key}",
-                "watch_url": f"/watch/{s.stream_key}/"
+                "watch_url": f"/watch/{s.stream_key}/",
+                "watch_webrtc_url": f"/watch_webrtc/{s.stream_key}/"
             } for s in streams
         ]
     })

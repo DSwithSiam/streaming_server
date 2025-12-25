@@ -113,9 +113,10 @@ video {
     if (Hls.isSupported()) {
         var hls = new Hls({
             lowLatencyMode: true,
-            liveSyncDurationCount: 3,      // target ~3 segments behind live
-            liveMaxLatencyDurationCount: 5,// cap max drift
-            maxBufferLength: 3             // keep small buffer
+            liveSyncDurationCount: 2,      // stay close to live edge
+            liveMaxLatencyDurationCount: 4,// cap max drift
+            maxBufferLength: 2,            // keep very small buffer
+            maxLiveSyncPlaybackRate: 1.5   // speed up slightly to catch up
         });
         hls.loadSource(hlsUrl);
         hls.attachMedia(video);
