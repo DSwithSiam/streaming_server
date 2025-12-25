@@ -28,7 +28,7 @@ echo "[1/6] Setting up System nginx reverse proxy..."
 cat > /etc/nginx/sites-available/streaming << 'EOF'
 server {
     listen 80;
-    server_name 10.10.13.73;
+    server_name 206.162.244.150;
 
     # Django proxy
     location / {
